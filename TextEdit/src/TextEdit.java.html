@@ -1,0 +1,671 @@
+<pre>
+<tt>
+001: <span style="font-style: italic"><span style="color: #9A1900">///////////////////////////////////////////////////////////////</span></span>
+002: <span style="font-style: italic"><span style="color: #9A1900">// Program: TextEdit.java</span></span>
+003: <span style="font-style: italic"><span style="color: #9A1900">//  Author: Anil Hemrajani</span></span>
+004: <span style="font-style: italic"><span style="color: #9A1900">//          anil@patriot.net</span></span>
+005: <span style="font-style: italic"><span style="color: #9A1900">//          http://www.patriot.net/users/anil/</span></span>
+006: <span style="font-style: italic"><span style="color: #9A1900">// Purpose: Sample Text Editor Java application/applet written</span></span>
+007: <span style="font-style: italic"><span style="color: #9A1900">//          to demo the capabilities of java.awt and some of</span></span>
+008: <span style="font-style: italic"><span style="color: #9A1900">//          java.net, java.applet and java.io.</span></span>
+009: <span style="font-style: italic"><span style="color: #9A1900">///////////////////////////////////////////////////////////////</span></span>
+010: 
+011: <span style="font-weight: bold"><span style="color: #000080">import</span></span> java<span style="color: #990000">.</span>io<span style="color: #990000">.</span><span style="color: #990000">*</span><span style="color: #990000">;</span>
+012: <span style="font-weight: bold"><span style="color: #000080">import</span></span> java<span style="color: #990000">.</span>awt<span style="color: #990000">.</span><span style="color: #990000">*</span><span style="color: #990000">;</span>
+013: <span style="font-weight: bold"><span style="color: #000080">import</span></span> java<span style="color: #990000">.</span>net<span style="color: #990000">.</span><span style="color: #990000">*</span><span style="color: #990000">;</span>
+014: <span style="font-weight: bold"><span style="color: #000080">import</span></span> java<span style="color: #990000">.</span>applet<span style="color: #990000">.</span>Applet<span style="color: #990000">;</span>
+015: 
+016: 
+017: <span style="font-style: italic"><span style="color: #9A1900">//**********************************</span></span>
+018: <span style="font-style: italic"><span style="color: #9A1900">//* This class provides the Applet</span></span>
+019: <span style="font-style: italic"><span style="color: #9A1900">//**********************************</span></span>
+020: <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #0000FF">class</span></span> TextEdit <span style="font-weight: bold"><span style="color: #0000FF">extends</span></span> Applet
+021: <span style="color: #FF0000">{</span>
+022:    <span style="font-style: italic"><span style="color: #9A1900">// Data members</span></span>
+023:    <span style="font-weight: bold"><span style="color: #0000FF">static</span></span>    TextFrame appFrame<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">;</span>
+024:    Toolkit   toolKit<span style="color: #990000">=</span>Toolkit<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getDefaultToolkit</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+025:    TextArea  taText<span style="color: #990000">;</span>
+026:    TextField tURL<span style="color: #990000">;</span>
+027:    Choice    cFontNames<span style="color: #990000">,</span> cFontSizes<span style="color: #990000">;</span>
+028:    Checkbox  cbItalic<span style="color: #990000">,</span> cbBold<span style="color: #990000">;</span>
+029:    Label     statusBar<span style="color: #990000">;</span>
+030:    <span style="font-weight: bold"><span style="color: #0000FF">static</span></span>    String MI_NEW<span style="color: #990000">=</span><span style="color: #FF0000">"New"</span><span style="color: #990000">,</span>
+031:                     MI_OPEN<span style="color: #990000">=</span><span style="color: #FF0000">"Open..."</span><span style="color: #990000">,</span>
+032:                     MI_SAVE<span style="color: #990000">=</span><span style="color: #FF0000">"Save"</span><span style="color: #990000">,</span>
+033:                     MI_SAVEAS<span style="color: #990000">=</span><span style="color: #FF0000">"Save As..."</span><span style="color: #990000">,</span>
+034:                     MI_URLREAD<span style="color: #990000">=</span><span style="color: #FF0000">"Read URL"</span><span style="color: #990000">,</span>
+035:                     MI_URLWRITE<span style="color: #990000">=</span><span style="color: #FF0000">"Write URL"</span><span style="color: #990000">,</span>
+036:                     MI_URLSHOW<span style="color: #990000">=</span><span style="color: #FF0000">"Show URL"</span><span style="color: #990000">,</span>
+037:                     MI_EXIT<span style="color: #990000">=</span><span style="color: #FF0000">"Exit"</span><span style="color: #990000">,</span>
+038:                     DEF_FNAME<span style="color: #990000">=</span><span style="color: #FF0000">"Courier"</span><span style="color: #990000">,</span>
+039:                     DEF_FSIZE<span style="color: #990000">=</span><span style="color: #FF0000">"12"</span><span style="color: #990000">,</span>
+040:                     NEW_FILE<span style="color: #990000">=</span><span style="color: #FF0000">"untitled.txt"</span><span style="color: #990000">;</span>
+041:    StringBuffer currFile<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">,</span> currURL<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">;</span>
+042:    <span style="color: #009900">boolean</span> inAnApplet<span style="color: #990000">=</span>true<span style="color: #990000">,</span> Edited<span style="color: #990000">=</span>false<span style="color: #990000">,</span> showStatusMsgInBrowser<span style="color: #990000">=</span>true<span style="color: #990000">;</span>
+043:    Panel topPanel<span style="color: #990000">,</span> fontPanel<span style="color: #990000">,</span> buttonPanel<span style="color: #990000">;</span>
+044:    Image iconImage <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">;</span>
+045: 
+046:    <span style="font-style: italic"><span style="color: #9A1900">// "main" invoked when run as an application</span></span>
+047:    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #0000FF">static</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">main</span></span><span style="color: #990000">(</span>String args<span style="color: #990000">[</span><span style="color: #990000">]</span><span style="color: #990000">)</span>
+048:    <span style="color: #FF0000">{</span>
+049:       <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>args<span style="color: #990000">.</span>length <span style="color: #990000">&gt;</span> <span style="color: #993399">0</span><span style="color: #990000">)</span>
+050:         appFrame<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">TextFrame</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">TextEdit</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">,</span> args<span style="color: #990000">[</span><span style="color: #993399">0</span><span style="color: #990000">]</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+051:       <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+052:         appFrame<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">TextFrame</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">TextEdit</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+053:    <span style="color: #FF0000">}</span>
+054: 
+055:    <span style="font-style: italic"><span style="color: #9A1900">// "init" invoked automatically when run as an</span></span>
+056:    <span style="font-style: italic"><span style="color: #9A1900">// applet or if directly called by another class</span></span>
+057:    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">init</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span>
+058:    <span style="color: #FF0000">{</span>
+059:        <span style="font-style: italic"><span style="color: #9A1900">// Initialize variables</span></span>
+060:        currFile  <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">StringBuffer</span></span><span style="color: #990000">(</span>NEW_FILE<span style="color: #990000">)</span><span style="color: #990000">;</span>
+061:        currURL   <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">StringBuffer</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+062: 
+063:        <span style="font-style: italic"><span style="color: #9A1900">// Play welcome message if file exists</span></span>
+064:        <span style="font-style: italic"><span style="color: #9A1900">// and we are in an Applet.  Also, get</span></span>
+065:        <span style="font-style: italic"><span style="color: #9A1900">// pretty app image.</span></span>
+066:        <span style="font-style: italic"><span style="color: #9A1900">/*</span></span>
+067: <span style="font-style: italic"><span style="color: #9A1900">       if (inAnApplet)</span></span>
+068: <span style="font-style: italic"><span style="color: #9A1900">       {</span></span>
+069: <span style="font-style: italic"><span style="color: #9A1900">           iconImage=getImage(getCodeBase(), "textedit.gif");</span></span>
+070: <span style="font-style: italic"><span style="color: #9A1900">           play(getCodeBase(), "textedit.au");</span></span>
+071: <span style="font-style: italic"><span style="color: #9A1900">       }</span></span>
+072: <span style="font-style: italic"><span style="color: #9A1900">       else</span></span>
+073: <span style="font-style: italic"><span style="color: #9A1900">           iconImage=toolKit.getImage("textedit.gif");</span></span>
+074: <span style="font-style: italic"><span style="color: #9A1900">       */</span></span>
+075: 
+076:        <span style="font-style: italic"><span style="color: #9A1900">// List of Font Names</span></span>
+077:        cFontNames <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Choice</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+078:        <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #990000">(</span><span style="color: #009900">int</span> i<span style="color: #990000">=</span><span style="color: #993399">0</span><span style="color: #990000">;</span> i <span style="color: #990000">&lt;</span> toolKit<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getFontList</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">.</span>length<span style="color: #990000">;</span> i<span style="color: #990000">+</span><span style="color: #990000">+</span><span style="color: #990000">)</span>
+079:            cFontNames<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addItem</span></span><span style="color: #990000">(</span>toolKit<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getFontList</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">[</span>i<span style="color: #990000">]</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+080:        cFontNames<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">select</span></span><span style="color: #990000">(</span>DEF_FNAME<span style="color: #990000">)</span><span style="color: #990000">;</span>
+081: 
+082:        <span style="font-style: italic"><span style="color: #9A1900">// List of Font Sizes</span></span>
+083:        cFontSizes <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Choice</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+084:        cFontSizes<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addItem</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"8"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+085:        cFontSizes<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addItem</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"10"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+086:        cFontSizes<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addItem</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"12"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+087:        cFontSizes<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addItem</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"14"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+088:        cFontSizes<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addItem</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"18"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+089:        cFontSizes<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addItem</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"24"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+090:        cFontSizes<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addItem</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"48"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+091:        cFontSizes<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">select</span></span><span style="color: #990000">(</span>DEF_FSIZE<span style="color: #990000">)</span><span style="color: #990000">;</span>
+092: 
+093:        <span style="font-style: italic"><span style="color: #9A1900">// Checkboxes for Bold/Italic Control</span></span>
+094:        cbBold <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Checkbox</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Bold"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+095:        cbItalic <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Checkbox</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Italic"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+096:        cbBold<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setState</span></span><span style="color: #990000">(</span>false<span style="color: #990000">)</span><span style="color: #990000">;</span>
+097:        cbItalic<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setState</span></span><span style="color: #990000">(</span>false<span style="color: #990000">)</span><span style="color: #990000">;</span>
+098: 
+099:        <span style="font-style: italic"><span style="color: #9A1900">// Font Tool Bar</span></span>
+100:        fontPanel <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Panel</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+101:        fontPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setLayout</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">FlowLayout</span></span><span style="color: #990000">(</span>FlowLayout<span style="color: #990000">.</span>LEFT<span style="color: #990000">,</span><span style="color: #993399">1</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+102:        fontPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span>cFontNames<span style="color: #990000">)</span><span style="color: #990000">;</span>
+103:        fontPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span>cFontSizes<span style="color: #990000">)</span><span style="color: #990000">;</span>
+104:        fontPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span>cbBold<span style="color: #990000">)</span><span style="color: #990000">;</span>
+105:        fontPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span>cbItalic<span style="color: #990000">)</span><span style="color: #990000">;</span>
+106: 
+107:        <span style="font-style: italic"><span style="color: #9A1900">// URL Panel</span></span>
+108:        Panel urlPanel <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Panel</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+109:        GridBagLayout gb <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">GridBagLayout</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+110:        GridBagConstraints gbc <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">GridBagConstraints</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+111:        urlPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setLayout</span></span><span style="color: #990000">(</span>gb<span style="color: #990000">)</span><span style="color: #990000">;</span>
+112:        gbc<span style="color: #990000">.</span>fill  <span style="color: #990000">=</span> GridBagConstraints<span style="color: #990000">.</span>HORIZONTAL<span style="color: #990000">;</span>
+113:        gbc<span style="color: #990000">.</span>ipadx <span style="color: #990000">=</span> <span style="color: #993399">5</span><span style="color: #990000">;</span>
+114: 
+115:        Label   l <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Label</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"URL:"</span><span style="color: #990000">,</span> Label<span style="color: #990000">.</span>LEFT<span style="color: #990000">)</span><span style="color: #990000">;</span>
+116:        gb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setConstraints</span></span><span style="color: #990000">(</span>l<span style="color: #990000">,</span> gbc<span style="color: #990000">)</span><span style="color: #990000">;</span>
+117:        urlPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span>l<span style="color: #990000">)</span><span style="color: #990000">;</span>
+118: 
+119:        tURL <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">TextField</span></span><span style="color: #990000">(</span><span style="color: #993399">65</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+120:        gbc<span style="color: #990000">.</span>gridwidth <span style="color: #990000">=</span> GridBagConstraints<span style="color: #990000">.</span>RELATIVE<span style="color: #990000">;</span>
+121:        gbc<span style="color: #990000">.</span>weightx <span style="color: #990000">=</span> <span style="color: #993399">1.0</span><span style="color: #990000">;</span>
+122:        gb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setConstraints</span></span><span style="color: #990000">(</span>tURL<span style="color: #990000">,</span> gbc<span style="color: #990000">)</span><span style="color: #990000">;</span>
+123:        urlPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span>tURL<span style="color: #990000">)</span><span style="color: #990000">;</span>
+124: 
+125:        <span style="font-style: italic"><span style="color: #9A1900">/* Show pretty image</span></span>
+126: <span style="font-style: italic"><span style="color: #9A1900">       LoadImag img = new LoadImag(iconImage, 48, 48);</span></span>
+127: <span style="font-style: italic"><span style="color: #9A1900">       gbc.gridwidth = GridBagConstraints.REMAINDER;</span></span>
+128: <span style="font-style: italic"><span style="color: #9A1900">       gbc.weightx = 0.0;</span></span>
+129: <span style="font-style: italic"><span style="color: #9A1900">       gb.setConstraints(img, gbc);</span></span>
+130: <span style="font-style: italic"><span style="color: #9A1900">       urlPanel.add(img); */</span></span>
+131: 
+132:        <span style="font-style: italic"><span style="color: #9A1900">// Push Button Tool Bar</span></span>
+133:        buttonPanel <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Panel</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+134:        buttonPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setLayout</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">GridLayout</span></span><span style="color: #990000">(</span><span style="color: #993399">1</span><span style="color: #990000">,</span><span style="color: #993399">7</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+135:        buttonPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Button</span></span><span style="color: #990000">(</span>MI_NEW<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+136:        buttonPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Button</span></span><span style="color: #990000">(</span>MI_OPEN<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+137:        buttonPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Button</span></span><span style="color: #990000">(</span>MI_SAVE<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+138:        buttonPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Button</span></span><span style="color: #990000">(</span>MI_SAVEAS<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+139:        buttonPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Button</span></span><span style="color: #990000">(</span>MI_URLREAD<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+140:        buttonPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Button</span></span><span style="color: #990000">(</span>MI_URLWRITE<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+141:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span><span style="color: #990000">!</span>inAnApplet<span style="color: #990000">)</span>
+142:            buttonPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Button</span></span><span style="color: #990000">(</span>MI_EXIT<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+143:        <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+144:            buttonPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Button</span></span><span style="color: #990000">(</span>MI_URLSHOW<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+145: 
+146:        <span style="font-style: italic"><span style="color: #9A1900">// Top of screen panel</span></span>
+147:        topPanel<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Panel</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+148:        topPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setLayout</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">BorderLayout</span></span><span style="color: #990000">(</span><span style="color: #993399">1</span><span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+149:        topPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"North"</span><span style="color: #990000">,</span>  urlPanel<span style="color: #990000">)</span><span style="color: #990000">;</span>
+150:        topPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Center"</span><span style="color: #990000">,</span> buttonPanel<span style="color: #990000">)</span><span style="color: #990000">;</span>
+151:        topPanel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"South"</span><span style="color: #990000">,</span>  fontPanel<span style="color: #990000">)</span><span style="color: #990000">;</span>
+152: 
+153:        <span style="font-style: italic"><span style="color: #9A1900">// Text Editing Area (20 rows x 80 cols)</span></span>
+154:        taText <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">TextArea</span></span><span style="color: #990000">(</span><span style="color: #993399">18</span><span style="color: #990000">,</span> <span style="color: #993399">80</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+155: 
+156:        <span style="font-style: italic"><span style="color: #9A1900">// Status Bar</span></span>
+157:        statusBar <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Label</span></span><span style="color: #990000">(</span>NEW_FILE<span style="color: #990000">,</span> Label<span style="color: #990000">.</span>LEFT<span style="color: #990000">)</span><span style="color: #990000">;</span>
+158: 
+159:        <span style="font-style: italic"><span style="color: #9A1900">// Add Panels to Applet (a Panel itself)</span></span>
+160:        <span style="font-weight: bold"><span style="color: #000000">setLayout</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">BorderLayout</span></span><span style="color: #990000">(</span><span style="color: #993399">1</span><span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+161:        <span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"North"</span><span style="color: #990000">,</span>  topPanel<span style="color: #990000">)</span><span style="color: #990000">;</span>
+162:        <span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Center"</span><span style="color: #990000">,</span> taText<span style="color: #990000">)</span><span style="color: #990000">;</span>
+163:        <span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"South"</span><span style="color: #990000">,</span>  statusBar<span style="color: #990000">)</span><span style="color: #990000">;</span>
+164: 
+165:        <span style="font-weight: bold"><span style="color: #000000">setTextFont</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+166:    <span style="color: #FF0000">}</span>
+167: 
+168:    <span style="font-style: italic"><span style="color: #9A1900">// Set padding for fill3DRect() in paint()</span></span>
+169:    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> Insets <span style="font-weight: bold"><span style="color: #000000">insets</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span>
+170:    <span style="color: #FF0000">{</span>
+171:        <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Insets</span></span><span style="color: #990000">(</span><span style="color: #993399">4</span><span style="color: #990000">,</span> <span style="color: #993399">4</span><span style="color: #990000">,</span> <span style="color: #993399">4</span><span style="color: #990000">,</span> <span style="color: #993399">4</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+172:    <span style="color: #FF0000">}</span>
+173: 
+174:    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">paint</span></span><span style="color: #990000">(</span>Graphics g<span style="color: #990000">)</span>
+175:    <span style="color: #FF0000">{</span>
+176:        <span style="font-style: italic"><span style="color: #9A1900">// Draw a 3D line below menu bar</span></span>
+177:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span><span style="color: #990000">!</span>inAnApplet<span style="color: #990000">)</span>
+178:        <span style="color: #FF0000">{</span>
+179:            g<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setColor</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">getBackground</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+180:            g<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">fill3DRect</span></span><span style="color: #990000">(</span><span style="color: #993399">0</span><span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #000000">size</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">.</span>width<span style="color: #990000">,</span> <span style="color: #993399">2</span><span style="color: #990000">,</span> false<span style="color: #990000">)</span><span style="color: #990000">;</span>
+181:        <span style="color: #FF0000">}</span>
+182:        <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+183:            g<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">draw3DRect</span></span><span style="color: #990000">(</span><span style="color: #993399">0</span><span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #000000">size</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">.</span>width<span style="color: #990000">-</span><span style="color: #993399">1</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #000000">size</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">.</span>height<span style="color: #990000">-</span><span style="color: #993399">1</span><span style="color: #990000">,</span> false<span style="color: #990000">)</span><span style="color: #990000">;</span>
+184:    
+185:        <span style="font-style: italic"><span style="color: #9A1900">/* Set Checkbox font to match it's function</span></span>
+186: <span style="font-style: italic"><span style="color: #9A1900">       cbBold.setFont(new Font(cbBold.getFont().getName(),</span></span>
+187: <span style="font-style: italic"><span style="color: #9A1900">                            Font.BOLD,</span></span>
+188: <span style="font-style: italic"><span style="color: #9A1900">                            cbBold.getFont().getSize()));</span></span>
+189: <span style="font-style: italic"><span style="color: #9A1900">       cbItalic.setFont(new Font(cbItalic.getFont().getName(),</span></span>
+190: <span style="font-style: italic"><span style="color: #9A1900">                            Font.ITALIC,</span></span>
+191: <span style="font-style: italic"><span style="color: #9A1900">                            cbItalic.getFont().getSize()));</span></span>
+192: <span style="font-style: italic"><span style="color: #9A1900">       */</span></span>
+193:        <span style="font-style: italic"><span style="color: #9A1900">// Always set cursor in text area</span></span>
+194:        taText<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">requestFocus</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+195:    <span style="color: #FF0000">}</span>
+196: 
+197:    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #009900">boolean</span> <span style="font-weight: bold"><span style="color: #000000">handleEvent</span></span><span style="color: #990000">(</span>Event evt<span style="color: #990000">)</span>
+198:    <span style="color: #FF0000">{</span>
+199:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>evt<span style="color: #990000">.</span>id <span style="color: #990000">=</span><span style="color: #990000">=</span> Event<span style="color: #990000">.</span>WINDOW_DESTROY<span style="color: #990000">)</span>
+200:            <span style="font-weight: bold"><span style="color: #000000">terminate</span></span><span style="color: #990000">(</span><span style="color: #993399">0</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+201:        <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+202:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>evt<span style="color: #990000">.</span>id <span style="color: #990000">=</span><span style="color: #990000">=</span> Event<span style="color: #990000">.</span>ACTION_EVENT<span style="color: #990000">)</span>
+203:        <span style="color: #FF0000">{</span>
+204:           <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">""</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+205: 
+206:           <span style="font-style: italic"><span style="color: #9A1900">// Font name, style or size change</span></span>
+207:           <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>evt<span style="color: #990000">.</span>target <span style="font-weight: bold"><span style="color: #0000FF">instanceof</span></span> Choice <span style="color: #990000">|</span><span style="color: #990000">|</span>
+208:               evt<span style="color: #990000">.</span>target <span style="font-weight: bold"><span style="color: #0000FF">instanceof</span></span> Checkbox<span style="color: #990000">)</span>
+209:               <span style="font-weight: bold"><span style="color: #000000">setTextFont</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+210: 
+211:           <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+212:           <span style="font-style: italic"><span style="color: #9A1900">// Button or Menu item selected</span></span>
+213:           <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>evt<span style="color: #990000">.</span>target <span style="font-weight: bold"><span style="color: #0000FF">instanceof</span></span> Button <span style="color: #990000">|</span><span style="color: #990000">|</span>
+214:               evt<span style="color: #990000">.</span>target <span style="font-weight: bold"><span style="color: #0000FF">instanceof</span></span> MenuItem<span style="color: #990000">)</span>
+215:           <span style="color: #FF0000">{</span>
+216:             String menuLabel <span style="color: #990000">=</span> <span style="color: #990000">(</span>String<span style="color: #990000">)</span>evt<span style="color: #990000">.</span>arg<span style="color: #990000">;</span>
+217: 
+218:             <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>menuLabel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">equals</span></span><span style="color: #990000">(</span>MI_URLREAD<span style="color: #990000">)</span><span style="color: #990000">)</span>
+219:             <span style="color: #FF0000">{</span>
+220:                 <span style="font-weight: bold"><span style="color: #0000FF">try</span></span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">readFile</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">URL</span></span><span style="color: #990000">(</span>tURL<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getText</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+221:                 <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>MalformedURLException e<span style="color: #990000">)</span>
+222:                 <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+223:             <span style="color: #FF0000">}</span>
+224: 
+225:             <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+226:             <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>menuLabel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">equals</span></span><span style="color: #990000">(</span>MI_URLWRITE<span style="color: #990000">)</span><span style="color: #990000">)</span>
+227:             <span style="color: #FF0000">{</span>
+228:                 <span style="font-weight: bold"><span style="color: #0000FF">try</span></span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">writeFile</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">URL</span></span><span style="color: #990000">(</span>tURL<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getText</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+229:                 <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>MalformedURLException e<span style="color: #990000">)</span>
+230:                 <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+231:             <span style="color: #FF0000">}</span>
+232: 
+233:             <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+234:             <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>menuLabel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">equals</span></span><span style="color: #990000">(</span>MI_URLSHOW<span style="color: #990000">)</span> <span style="color: #990000">&amp;</span><span style="color: #990000">&amp;</span> inAnApplet<span style="color: #990000">)</span>
+235:             <span style="color: #FF0000">{</span>
+236:                 <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Please wait..."</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+237:                 <span style="font-weight: bold"><span style="color: #0000FF">try</span></span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">getAppletContext</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">showDocument</span></span><span style="color: #990000">(</span>
+238:                     <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">URL</span></span><span style="color: #990000">(</span>tURL<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getText</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+239:                 <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>MalformedURLException e<span style="color: #990000">)</span>
+240:                 <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+241:                 <span style="font-weight: bold"><span style="color: #0000FF">finally</span></span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">""</span><span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+242:             <span style="color: #FF0000">}</span>
+243: 
+244:             <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+245:             <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>menuLabel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">equals</span></span><span style="color: #990000">(</span>MI_OPEN<span style="color: #990000">)</span><span style="color: #990000">)</span>
+246:             <span style="color: #FF0000">{</span>
+247:                <span style="font-weight: bold"><span style="color: #000000">saveWarning</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+248:                DoFileDialog fd<span style="color: #990000">;</span>
+249: 
+250:                <span style="font-weight: bold"><span style="color: #0000FF">try</span></span> 
+251:                <span style="color: #FF0000">{</span>
+252:                    <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>inAnApplet<span style="color: #990000">)</span>
+253:                    <span style="color: #FF0000">{</span>
+254:                        <span style="font-weight: bold"><span style="color: #000000">disable</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="font-style: italic"><span style="color: #9A1900">// Simulate modality</span></span>
+255:                        fd <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">DoFileDialog</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">,</span>
+256:                                     <span style="color: #FF0000">"Open a File"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+257:                    <span style="color: #FF0000">}</span>
+258:                    <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+259:                        fd <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">DoFileDialog</span></span><span style="color: #990000">(</span>appFrame<span style="color: #990000">,</span>
+260:                                   <span style="color: #FF0000">"Open a File"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+261: 
+262:                    <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>fd<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getPath</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">)</span>
+263:                        <span style="font-weight: bold"><span style="color: #000000">readFile</span></span><span style="color: #990000">(</span>fd<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getPath</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+264:                <span style="color: #FF0000">}</span>
+265:                <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>AWTError e<span style="color: #990000">)</span>
+266:                <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span>
+267:                  <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>inAnApplet<span style="color: #990000">)</span>
+268:                      <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span>e<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #990000">+</span>
+269:                       <span style="color: #FF0000">"  (probably due to security restrictions)"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+270:                <span style="color: #FF0000">}</span>
+271:                <span style="font-weight: bold"><span style="color: #0000FF">finally</span></span>
+272:                <span style="color: #FF0000">{</span>
+273:                  <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>inAnApplet<span style="color: #990000">)</span>
+274:                      <span style="font-weight: bold"><span style="color: #000000">enable</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+275:                <span style="color: #FF0000">}</span>
+276:             <span style="color: #FF0000">}</span>
+277: 
+278:             <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+279:             <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>menuLabel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">equals</span></span><span style="color: #990000">(</span>MI_SAVEAS<span style="color: #990000">)</span><span style="color: #990000">)</span>
+280:             <span style="color: #FF0000">{</span>
+281:                <span style="font-weight: bold"><span style="color: #000000">saveWarning</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+282:                DoFileDialog fd<span style="color: #990000">;</span>
+283: 
+284:                <span style="font-weight: bold"><span style="color: #0000FF">try</span></span> 
+285:                <span style="color: #FF0000">{</span>
+286:                    <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>inAnApplet<span style="color: #990000">)</span>
+287:                    <span style="color: #FF0000">{</span>
+288:                        <span style="font-weight: bold"><span style="color: #000000">disable</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="font-style: italic"><span style="color: #9A1900">// Simulate modality</span></span>
+289:                        fd <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">DoFileDialog</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">,</span>
+290:                                   <span style="color: #FF0000">"Save File As"</span><span style="color: #990000">,</span>
+291:                                    FileDialog<span style="color: #990000">.</span>SAVE<span style="color: #990000">)</span><span style="color: #990000">;</span>
+292:                    <span style="color: #FF0000">}</span>
+293:                    <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+294:                        fd <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">DoFileDialog</span></span><span style="color: #990000">(</span>appFrame<span style="color: #990000">,</span>
+295:                                   <span style="color: #FF0000">"Save File As"</span><span style="color: #990000">,</span>
+296:                                   FileDialog<span style="color: #990000">.</span>SAVE<span style="color: #990000">)</span><span style="color: #990000">;</span>
+297:                    <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>fd<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getPath</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">)</span>
+298:                        <span style="font-weight: bold"><span style="color: #000000">writeFile</span></span><span style="color: #990000">(</span>fd<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getPath</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+299:                <span style="color: #FF0000">}</span>
+300:                <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>AWTError e<span style="color: #990000">)</span>
+301:                <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span>
+302:                  <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>inAnApplet<span style="color: #990000">)</span>
+303:                      <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span>e<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #990000">+</span>
+304:                       <span style="color: #FF0000">"  (probably due to security restrictions)"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+305:                <span style="color: #FF0000">}</span>
+306:                <span style="font-weight: bold"><span style="color: #0000FF">finally</span></span>
+307:                <span style="color: #FF0000">{</span>
+308:                  <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>inAnApplet<span style="color: #990000">)</span>
+309:                      <span style="font-weight: bold"><span style="color: #000000">enable</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+310:                <span style="color: #FF0000">}</span>
+311:             <span style="color: #FF0000">}</span>
+312: 
+313:             <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+314:             <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>menuLabel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">equals</span></span><span style="color: #990000">(</span>MI_SAVE<span style="color: #990000">)</span><span style="color: #990000">)</span>
+315:                 <span style="font-weight: bold"><span style="color: #000000">writeFile</span></span><span style="color: #990000">(</span>currFile<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+316:             <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+317:             <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>menuLabel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">equals</span></span><span style="color: #990000">(</span>MI_NEW<span style="color: #990000">)</span><span style="color: #990000">)</span>
+318:                 <span style="font-weight: bold"><span style="color: #000000">newFile</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+319:             <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+320:             <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>menuLabel<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">equals</span></span><span style="color: #990000">(</span>MI_EXIT<span style="color: #990000">)</span><span style="color: #990000">)</span>
+321:                <span style="font-weight: bold"><span style="color: #000000">terminate</span></span><span style="color: #990000">(</span><span style="color: #993399">0</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+322:           <span style="color: #FF0000">}</span>
+323: 
+324:           taText<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">requestFocus</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+325:           <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> true<span style="color: #990000">;</span>
+326:        <span style="color: #FF0000">}</span>
+327: 
+328:        <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+329:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>evt<span style="color: #990000">.</span>target <span style="font-weight: bold"><span style="color: #0000FF">instanceof</span></span> TextArea<span style="color: #990000">)</span>
+330:        <span style="color: #FF0000">{</span>
+331:           <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>evt<span style="color: #990000">.</span>id <span style="color: #990000">=</span><span style="color: #990000">=</span> Event<span style="color: #990000">.</span>KEY_PRESS<span style="color: #990000">)</span>
+332:               Edited<span style="color: #990000">=</span>true<span style="color: #990000">;</span>
+333:        <span style="color: #FF0000">}</span>
+334: 
+335:        <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> false<span style="color: #990000">;</span>
+336:    <span style="color: #FF0000">}</span>
+337: 
+338:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">setTextFont</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span>
+339:    <span style="color: #FF0000">{</span>
+340:        <span style="font-style: italic"><span style="color: #9A1900">// Set TextArea to requested font</span></span>
+341:        Integer i<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Integer</span></span><span style="color: #990000">(</span>cFontSizes<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getSelectedItem</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+342:        <span style="color: #009900">int</span> style <span style="color: #990000">=</span> Font<span style="color: #990000">.</span>PLAIN<span style="color: #990000">;</span>
+343: 
+344:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>cbBold<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getState</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #990000">=</span><span style="color: #990000">=</span> true<span style="color: #990000">)</span>
+345:            style <span style="color: #990000">|</span><span style="color: #990000">=</span> Font<span style="color: #990000">.</span>BOLD<span style="color: #990000">;</span>
+346:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>cbItalic<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getState</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #990000">=</span><span style="color: #990000">=</span> true<span style="color: #990000">)</span>
+347:            style <span style="color: #990000">|</span><span style="color: #990000">=</span> Font<span style="color: #990000">.</span>ITALIC<span style="color: #990000">;</span>
+348: 
+349:        taText<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setFont</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Font</span></span><span style="color: #990000">(</span>cFontNames<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getSelectedItem</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">,</span>
+350:                            style<span style="color: #990000">,</span> i<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">intValue</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+351:    <span style="color: #FF0000">}</span>
+352: 
+353:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">newFile</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span>
+354:    <span style="color: #FF0000">{</span>
+355:        <span style="font-weight: bold"><span style="color: #000000">saveWarning</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+356:        <span style="font-style: italic"><span style="color: #9A1900">// Clear screen for new file</span></span>
+357:        taText<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setText</span></span><span style="color: #990000">(</span><span style="color: #FF0000">""</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+358:        currFile<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setLength</span></span><span style="color: #990000">(</span><span style="color: #993399">0</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+359:        currFile<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span>NEW_FILE<span style="color: #990000">)</span><span style="color: #990000">;</span>
+360:        <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span>NEW_FILE<span style="color: #990000">)</span><span style="color: #990000">;</span>
+361:    <span style="color: #FF0000">}</span>
+362: 
+363:    <span style="font-style: italic"><span style="color: #9A1900">// Read a local file</span></span>
+364:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">readFile</span></span><span style="color: #990000">(</span>String filename<span style="color: #990000">)</span>
+365:    <span style="color: #FF0000">{</span>
+366:       <span style="font-weight: bold"><span style="color: #000000">saveWarning</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+367: 
+368:       <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Please wait..."</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+369:       <span style="font-weight: bold"><span style="color: #0000FF">try</span></span>
+370:       <span style="color: #FF0000">{</span>
+371:           <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">ReadFile</span></span><span style="color: #990000">(</span>filename<span style="color: #990000">,</span> taText<span style="color: #990000">)</span><span style="color: #990000">;</span>
+372:           currFile<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setLength</span></span><span style="color: #990000">(</span><span style="color: #993399">0</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+373:           currFile<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span>filename<span style="color: #990000">)</span><span style="color: #990000">;</span>
+374:           <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span>currFile<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+375:       <span style="color: #FF0000">}</span>
+376:       <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>FileNotFoundException e<span style="color: #990000">)</span>
+377:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+378:       <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>IOException e<span style="color: #990000">)</span>
+379:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+380:       <span style="font-weight: bold"><span style="color: #0000FF">finally</span></span>
+381:       <span style="color: #FF0000">{</span>
+382:         <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">""</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+383:       <span style="color: #FF0000">}</span>
+384:    <span style="color: #FF0000">}</span>
+385: 
+386:    <span style="font-style: italic"><span style="color: #9A1900">// Write to local file</span></span>
+387:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">writeFile</span></span><span style="color: #990000">(</span>String filename<span style="color: #990000">)</span>
+388:    <span style="color: #FF0000">{</span>
+389:       <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Please wait..."</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+390:       <span style="font-weight: bold"><span style="color: #0000FF">try</span></span> 
+391:       <span style="color: #FF0000">{</span>  
+392:           <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">WriteFile</span></span><span style="color: #990000">(</span>filename<span style="color: #990000">,</span> taText<span style="color: #990000">)</span><span style="color: #990000">;</span>
+393:           currFile<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setLength</span></span><span style="color: #990000">(</span><span style="color: #993399">0</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+394:           currFile<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span>filename<span style="color: #990000">)</span><span style="color: #990000">;</span>
+395:           <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span>currFile<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+396:           Edited<span style="color: #990000">=</span>false<span style="color: #990000">;</span>
+397:       <span style="color: #FF0000">}</span>
+398:       <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>IOException e<span style="color: #990000">)</span>
+399:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+400:       <span style="font-weight: bold"><span style="color: #0000FF">finally</span></span>
+401:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">""</span><span style="color: #990000">)</span><span style="color: #990000">;</span><span style="color: #FF0000">}</span>
+402:    <span style="color: #FF0000">}</span>
+403: 
+404:    <span style="font-style: italic"><span style="color: #9A1900">// Read from an Internet resource</span></span>
+405:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">readFile</span></span><span style="color: #990000">(</span>URL location<span style="color: #990000">)</span>
+406:    <span style="color: #FF0000">{</span>
+407:       <span style="font-weight: bold"><span style="color: #000000">saveWarning</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+408: 
+409:       <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Please wait..."</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+410:       <span style="font-weight: bold"><span style="color: #0000FF">try</span></span>
+411:       <span style="color: #FF0000">{</span>
+412:           <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">ReadFile</span></span><span style="color: #990000">(</span>location<span style="color: #990000">,</span> taText<span style="color: #990000">)</span><span style="color: #990000">;</span>
+413:           <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span>location<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+414:       <span style="color: #FF0000">}</span>
+415:       <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>MalformedURLException e<span style="color: #990000">)</span>
+416:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+417:       <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>IOException e<span style="color: #990000">)</span>
+418:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+419:       <span style="font-weight: bold"><span style="color: #0000FF">finally</span></span>
+420:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">""</span><span style="color: #990000">)</span><span style="color: #990000">;</span><span style="color: #FF0000">}</span>
+421:    <span style="color: #FF0000">}</span>
+422: 
+423:    <span style="font-style: italic"><span style="color: #9A1900">// Write to an Internet resource</span></span>
+424:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">writeFile</span></span><span style="color: #990000">(</span>URL location<span style="color: #990000">)</span>
+425:    <span style="color: #FF0000">{</span>
+426:       <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Please wait..."</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+427:       <span style="font-weight: bold"><span style="color: #0000FF">try</span></span> 
+428:       <span style="color: #FF0000">{</span>  
+429:           <span style="font-style: italic"><span style="color: #9A1900">// Save requested file</span></span>
+430:           <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">WriteFile</span></span><span style="color: #990000">(</span>location<span style="color: #990000">,</span> taText<span style="color: #990000">)</span><span style="color: #990000">;</span>
+431:           <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span>location<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+432:           Edited<span style="color: #990000">=</span>false<span style="color: #990000">;</span>
+433:       <span style="color: #FF0000">}</span>
+434:       <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>MalformedURLException e<span style="color: #990000">)</span>
+435:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+436:       <span style="font-weight: bold"><span style="color: #0000FF">catch</span></span> <span style="color: #990000">(</span>IOException e<span style="color: #990000">)</span>
+437:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #990000">;</span> <span style="color: #FF0000">}</span>
+438:       <span style="font-weight: bold"><span style="color: #0000FF">finally</span></span>
+439:       <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span><span style="color: #FF0000">""</span><span style="color: #990000">)</span><span style="color: #990000">;</span><span style="color: #FF0000">}</span>
+440:    <span style="color: #FF0000">}</span>
+441: 
+442:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span>String msgText<span style="color: #990000">)</span>
+443:    <span style="color: #FF0000">{</span>
+444:        statusBar<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setText</span></span><span style="color: #990000">(</span>msgText<span style="color: #990000">)</span><span style="color: #990000">;</span>
+445:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>inAnApplet <span style="color: #990000">&amp;</span><span style="color: #990000">&amp;</span> showStatusMsgInBrowser<span style="color: #990000">)</span>
+446:            <span style="font-weight: bold"><span style="color: #000000">showStatus</span></span><span style="color: #990000">(</span>msgText<span style="color: #990000">)</span><span style="color: #990000">;</span>
+447:    <span style="color: #FF0000">}</span>
+448:    
+449:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">showCatchError</span></span><span style="color: #990000">(</span>Throwable e<span style="color: #990000">)</span>
+450:    <span style="color: #FF0000">{</span>
+451:        <span style="font-weight: bold"><span style="color: #000000">statusMsg</span></span><span style="color: #990000">(</span>e<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+452:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>inAnApplet<span style="color: #990000">)</span>
+453:            <span style="font-weight: bold"><span style="color: #000000">showStatus</span></span><span style="color: #990000">(</span>e<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getMessage</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+454:        <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+455:            System<span style="color: #990000">.</span>err<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">println</span></span><span style="color: #990000">(</span>e<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getMessage</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+456:    <span style="color: #FF0000">}</span>
+457: 
+458: 
+459:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">saveWarning</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span>
+460:    <span style="color: #FF0000">{</span>
+461:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>Edited <span style="color: #990000">=</span><span style="color: #990000">=</span> true<span style="color: #990000">)</span>
+462:            <span style="color: #990000">;</span>  <span style="font-style: italic"><span style="color: #9A1900">// Add warning message here later</span></span>
+463:        Edited<span style="color: #990000">=</span>false<span style="color: #990000">;</span>
+464:    <span style="color: #FF0000">}</span>
+465: 
+466:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">terminate</span></span><span style="color: #990000">(</span><span style="color: #009900">int</span> rc<span style="color: #990000">)</span>
+467:    <span style="color: #FF0000">{</span>
+468:        <span style="font-weight: bold"><span style="color: #000000">saveWarning</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+469:        <span style="font-weight: bold"><span style="color: #000000">topWindow</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">dispose</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+470:    <span style="color: #FF0000">}</span>
+471:    <span style="font-weight: bold"><span style="color: #0000FF">protected</span></span> Window <span style="font-weight: bold"><span style="color: #000000">topWindow</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+472:      Container parent <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">getParent</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+473:      <span style="font-weight: bold"><span style="color: #0000FF">while</span></span> <span style="color: #990000">(</span><span style="color: #990000">!</span> <span style="color: #990000">(</span>parent <span style="font-weight: bold"><span style="color: #0000FF">instanceof</span></span> Window<span style="color: #990000">)</span><span style="color: #990000">)</span>
+474:        parent <span style="color: #990000">=</span> parent<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getParent</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+475:      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="color: #990000">(</span>Window<span style="color: #990000">)</span>parent<span style="color: #990000">;</span>
+476:    <span style="color: #FF0000">}</span>
+477: <span style="color: #FF0000">}</span>
+478: 
+479: 
+480: <span style="font-style: italic"><span style="color: #9A1900">//**************************************</span></span>
+481: <span style="font-style: italic"><span style="color: #9A1900">//* This provides a frame for the Applet</span></span>
+482: <span style="font-style: italic"><span style="color: #9A1900">//**************************************</span></span>
+483: <span style="font-weight: bold"><span style="color: #0000FF">class</span></span> TextFrame <span style="font-weight: bold"><span style="color: #0000FF">extends</span></span> Frame
+484: <span style="color: #FF0000">{</span>
+485:    TextEdit teApplet<span style="color: #990000">;</span>
+486: 
+487:    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #000000">TextFrame</span></span><span style="color: #990000">(</span>TextEdit t<span style="color: #990000">,</span>
+488:                     String openWithFile<span style="color: #990000">)</span>
+489:    <span style="color: #FF0000">{</span>
+490:        <span style="font-weight: bold"><span style="color: #000000">setTitle</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Text Editor"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+491:        teApplet<span style="color: #990000">=</span>t<span style="color: #990000">;</span>
+492: 
+493:        <span style="font-style: italic"><span style="color: #9A1900">// Build File Menu</span></span>
+494:        Menu fm  <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Menu</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"File"</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+495:        fm<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">MenuItem</span></span><span style="color: #990000">(</span>TextEdit<span style="color: #990000">.</span>MI_NEW<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+496:        fm<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">MenuItem</span></span><span style="color: #990000">(</span>TextEdit<span style="color: #990000">.</span>MI_OPEN<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+497:        fm<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">MenuItem</span></span><span style="color: #990000">(</span>TextEdit<span style="color: #990000">.</span>MI_SAVE<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+498:        fm<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">MenuItem</span></span><span style="color: #990000">(</span>TextEdit<span style="color: #990000">.</span>MI_SAVEAS<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+499:        fm<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">MenuItem</span></span><span style="color: #990000">(</span>TextEdit<span style="color: #990000">.</span>MI_URLREAD<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+500:        fm<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">MenuItem</span></span><span style="color: #990000">(</span>TextEdit<span style="color: #990000">.</span>MI_URLWRITE<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+501:        fm<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addSeparator</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+502:        fm<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">MenuItem</span></span><span style="color: #990000">(</span>TextEdit<span style="color: #990000">.</span>MI_EXIT<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+503: 
+504:        <span style="font-style: italic"><span style="color: #9A1900">// Add Menu Bar and Menu to Frame</span></span>
+505:        MenuBar mb <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">MenuBar</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+506:        mb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span>fm<span style="color: #990000">)</span><span style="color: #990000">;</span>
+507:        <span style="font-weight: bold"><span style="color: #000000">setMenuBar</span></span><span style="color: #990000">(</span>mb<span style="color: #990000">)</span><span style="color: #990000">;</span>
+508: 
+509:        teApplet<span style="color: #990000">.</span>inAnApplet<span style="color: #990000">=</span>false<span style="color: #990000">;</span>
+510:        <span style="font-style: italic"><span style="color: #9A1900">// Call init() method as a browser would</span></span>
+511:        teApplet<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">init</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+512:        <span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Center"</span><span style="color: #990000">,</span> teApplet<span style="color: #990000">)</span><span style="color: #990000">;</span>
+513: 
+514:        <span style="font-style: italic"><span style="color: #9A1900">// Open a file if requested</span></span>
+515:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>openWithFile <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">)</span>
+516:            teApplet<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">readFile</span></span><span style="color: #990000">(</span>openWithFile<span style="color: #990000">)</span><span style="color: #990000">;</span> 
+517: 
+518:        <span style="font-weight: bold"><span style="color: #000000">pack</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+519:        <span style="font-weight: bold"><span style="color: #000000">show</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+520:    <span style="color: #FF0000">}</span>
+521: 
+522:    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #009900">boolean</span> <span style="font-weight: bold"><span style="color: #000000">handleEvent</span></span><span style="color: #990000">(</span>Event evt<span style="color: #990000">)</span>
+523:    <span style="color: #FF0000">{</span>
+524:        <span style="font-style: italic"><span style="color: #9A1900">// Forward all events to Applet class</span></span>
+525:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>teApplet <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">)</span>
+526:            <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> teApplet<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">handleEvent</span></span><span style="color: #990000">(</span>evt<span style="color: #990000">)</span><span style="color: #990000">;</span>
+527: 
+528:        <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">handleEvent</span></span><span style="color: #990000">(</span>evt<span style="color: #990000">)</span><span style="color: #990000">;</span>
+529:    <span style="color: #FF0000">}</span>
+530: <span style="color: #FF0000">}</span>
+531: 
+532: 
+533: <span style="font-style: italic"><span style="color: #9A1900">//************************************************</span></span>
+534: <span style="font-style: italic"><span style="color: #9A1900">//* This loads a local file or URL into a TextArea</span></span>
+535: <span style="font-style: italic"><span style="color: #9A1900">//************************************************</span></span>
+536: <span style="font-weight: bold"><span style="color: #0000FF">class</span></span> ReadFile
+537: <span style="color: #FF0000">{</span>
+538:    StringBuffer sb <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">StringBuffer</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+539: 
+540:    <span style="font-weight: bold"><span style="color: #000000">ReadFile</span></span><span style="color: #990000">(</span>String FileName<span style="color: #990000">,</span> TextArea taText<span style="color: #990000">)</span>
+541:       <span style="font-weight: bold"><span style="color: #0000FF">throws</span></span> IOException<span style="color: #990000">,</span>
+542:              FileNotFoundException
+543:    <span style="color: #FF0000">{</span>
+544:       FileInputStream fis<span style="color: #990000">;</span>
+545:       sb <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">StringBuffer</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+546: 
+547:       fis <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">FileInputStream</span></span><span style="color: #990000">(</span>FileName<span style="color: #990000">)</span><span style="color: #990000">;</span>
+548:       <span style="color: #009900">int</span> oneChar<span style="color: #990000">;</span>
+549: 
+550:       <span style="font-weight: bold"><span style="color: #0000FF">while</span></span> <span style="color: #990000">(</span><span style="color: #990000">(</span>oneChar<span style="color: #990000">=</span>fis<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">read</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span> <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="color: #990000">-</span><span style="color: #993399">1</span><span style="color: #990000">)</span>
+551:             sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span><span style="color: #990000">(</span><span style="color: #009900">char</span><span style="color: #990000">)</span>oneChar<span style="color: #990000">)</span><span style="color: #990000">;</span>
+552:       fis<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">close</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+553:       taText<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setText</span></span><span style="color: #990000">(</span>sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+554:    <span style="color: #FF0000">}</span>
+555: 
+556: 
+557:    <span style="font-weight: bold"><span style="color: #000000">ReadFile</span></span><span style="color: #990000">(</span>URL location<span style="color: #990000">,</span> TextArea taText<span style="color: #990000">)</span>
+558:       <span style="font-weight: bold"><span style="color: #0000FF">throws</span></span> MalformedURLException<span style="color: #990000">,</span>
+559:              IOException
+560:    <span style="color: #FF0000">{</span>
+561:       InputStream is <span style="color: #990000">=</span> location<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">openStream</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+562:       <span style="color: #009900">int</span> oneChar<span style="color: #990000">;</span>
+563:       sb <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">StringBuffer</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+564: 
+565:       <span style="font-weight: bold"><span style="color: #0000FF">while</span></span> <span style="color: #990000">(</span><span style="color: #990000">(</span>oneChar<span style="color: #990000">=</span>is<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">read</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span> <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="color: #990000">-</span><span style="color: #993399">1</span><span style="color: #990000">)</span>
+566:          sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span><span style="color: #990000">(</span><span style="color: #009900">char</span><span style="color: #990000">)</span>oneChar<span style="color: #990000">)</span><span style="color: #990000">;</span>
+567:       is<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">close</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+568:       taText<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setText</span></span><span style="color: #990000">(</span>sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+569:    <span style="color: #FF0000">}</span>
+570: <span style="color: #FF0000">}</span>
+571: 
+572: 
+573: <span style="font-style: italic"><span style="color: #9A1900">//****************************************************</span></span>
+574: <span style="font-style: italic"><span style="color: #9A1900">//* This writes to a local file or URL from a TextArea</span></span>
+575: <span style="font-style: italic"><span style="color: #9A1900">//****************************************************</span></span>
+576: <span style="font-weight: bold"><span style="color: #0000FF">class</span></span> WriteFile
+577: <span style="color: #FF0000">{</span>
+578:    StringBuffer sb<span style="color: #990000">;</span>
+579: 
+580:    <span style="font-weight: bold"><span style="color: #000000">WriteFile</span></span><span style="color: #990000">(</span>String FileName<span style="color: #990000">,</span> TextArea taText<span style="color: #990000">)</span>
+581:       <span style="font-weight: bold"><span style="color: #0000FF">throws</span></span> IOException
+582:    <span style="color: #FF0000">{</span>
+583:       FileOutputStream fos<span style="color: #990000">;</span>
+584:       sb <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">StringBuffer</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+585:       sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span>taText<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getText</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+586:       <span style="color: #009900">int</span> i<span style="color: #990000">;</span>
+587: 
+588:       fos <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">FileOutputStream</span></span><span style="color: #990000">(</span>FileName<span style="color: #990000">)</span><span style="color: #990000">;</span>
+589:       <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #990000">(</span>i<span style="color: #990000">=</span><span style="color: #993399">0</span><span style="color: #990000">;</span> i <span style="color: #990000">&lt;</span> sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">length</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span> i<span style="color: #990000">+</span><span style="color: #990000">+</span><span style="color: #990000">)</span>
+590:            fos<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">write</span></span><span style="color: #990000">(</span>sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">charAt</span></span><span style="color: #990000">(</span>i<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+591:       fos<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">close</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+592:    <span style="color: #FF0000">}</span>
+593: 
+594: 
+595:    <span style="font-weight: bold"><span style="color: #000000">WriteFile</span></span><span style="color: #990000">(</span>URL location<span style="color: #990000">,</span> TextArea taText<span style="color: #990000">)</span>
+596:       <span style="font-weight: bold"><span style="color: #0000FF">throws</span></span> MalformedURLException<span style="color: #990000">,</span>
+597:              IOException
+598:    <span style="color: #FF0000">{</span>
+599:       URLConnection urlConnect <span style="color: #990000">=</span> location<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">openConnection</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+600:       urlConnect<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setDoOutput</span></span><span style="color: #990000">(</span>true<span style="color: #990000">)</span><span style="color: #990000">;</span>
+601: 
+602:       OutputStream os <span style="color: #990000">=</span> urlConnect<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getOutputStream</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+603: 
+604:       sb <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">StringBuffer</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+605:       sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span>taText<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getText</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+606: 
+607:       <span style="color: #009900">int</span> i<span style="color: #990000">;</span>
+608:       <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #990000">(</span>i<span style="color: #990000">=</span><span style="color: #993399">0</span><span style="color: #990000">;</span> i <span style="color: #990000">&lt;</span> sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">length</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span> i<span style="color: #990000">+</span><span style="color: #990000">+</span><span style="color: #990000">)</span>
+609:            os<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">write</span></span><span style="color: #990000">(</span>sb<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">charAt</span></span><span style="color: #990000">(</span>i<span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+610:       os<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">close</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+611: 
+612:       <span style="font-style: italic"><span style="color: #9A1900">// Print any returned data to standard out</span></span>
+613:       InputStream is <span style="color: #990000">=</span> urlConnect<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getInputStream</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+614:       <span style="color: #009900">int</span> oneChar<span style="color: #990000">;</span>
+615: 
+616:       <span style="font-weight: bold"><span style="color: #0000FF">while</span></span> <span style="color: #990000">(</span><span style="color: #990000">(</span>oneChar<span style="color: #990000">=</span>is<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">read</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span> <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="color: #990000">-</span><span style="color: #993399">1</span><span style="color: #990000">)</span>
+617:          System<span style="color: #990000">.</span>out<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">print</span></span><span style="color: #990000">(</span><span style="color: #990000">(</span><span style="color: #009900">char</span><span style="color: #990000">)</span>oneChar<span style="color: #990000">)</span><span style="color: #990000">;</span>
+618:       is<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">close</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+619: 
+620:       System<span style="color: #990000">.</span>out<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">flush</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+621:    <span style="color: #FF0000">}</span>
+622: <span style="color: #FF0000">}</span>
+623: 
+624: 
+625: <span style="font-style: italic"><span style="color: #9A1900">//************************************************</span></span>
+626: <span style="font-style: italic"><span style="color: #9A1900">//* This provides the FileDialog services.  If the</span></span>
+627: <span style="font-style: italic"><span style="color: #9A1900">//* parent frame is null, then it creates its own</span></span>
+628: <span style="font-style: italic"><span style="color: #9A1900">//************************************************</span></span>
+629: <span style="font-weight: bold"><span style="color: #0000FF">class</span></span> DoFileDialog
+630: <span style="color: #FF0000">{</span>
+631:    FileDialog fd<span style="color: #990000">;</span>
+632:    Frame f<span style="color: #990000">;</span>
+633: 
+634:    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #000000">DoFileDialog</span></span><span style="color: #990000">(</span>Frame parent<span style="color: #990000">,</span>
+635:                        String Title<span style="color: #990000">,</span> <span style="color: #009900">int</span> Mode<span style="color: #990000">)</span>
+636:           <span style="font-weight: bold"><span style="color: #0000FF">throws</span></span> AWTError
+637:    <span style="color: #FF0000">{</span>
+638:        f<span style="color: #990000">=</span><span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">;</span>
+639:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>parent <span style="color: #990000">=</span><span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">)</span>
+640:        <span style="color: #FF0000">{</span>
+641:            f <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Frame</span></span><span style="color: #990000">(</span>Title<span style="color: #990000">)</span><span style="color: #990000">;</span>
+642:            f<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">pack</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+643:            fd <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">FileDialog</span></span><span style="color: #990000">(</span>f<span style="color: #990000">,</span> Title<span style="color: #990000">,</span> Mode<span style="color: #990000">)</span><span style="color: #990000">;</span>
+644:        <span style="color: #FF0000">}</span>
+645:        <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
+646:            fd <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">FileDialog</span></span><span style="color: #990000">(</span>parent<span style="color: #990000">,</span> Title<span style="color: #990000">,</span> Mode<span style="color: #990000">)</span><span style="color: #990000">;</span>
+647: 
+648:        fd<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">show</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+649:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>f <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">)</span>
+650:            f<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">dispose</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+651:    <span style="color: #FF0000">}</span>
+652: 
+653:    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #000000">DoFileDialog</span></span><span style="color: #990000">(</span>Frame parent<span style="color: #990000">,</span> String Title<span style="color: #990000">)</span>
+654:    <span style="color: #FF0000">{</span>
+655:        <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">(</span>parent<span style="color: #990000">,</span> Title<span style="color: #990000">,</span> FileDialog<span style="color: #990000">.</span>LOAD<span style="color: #990000">)</span><span style="color: #990000">;</span>
+656:    <span style="color: #FF0000">}</span>
+657: 
+658:    String <span style="font-weight: bold"><span style="color: #000000">getPath</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+659:        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>fd                <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span> <span style="color: #990000">&amp;</span><span style="color: #990000">&amp;</span>
+660:            fd<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getDirectory</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span> <span style="color: #990000">&amp;</span><span style="color: #990000">&amp;</span>
+661:            fd<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getFile</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span>      <span style="color: #990000">!</span><span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">)</span>
+662:            <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="color: #990000">(</span>fd<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getDirectory</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span> <span style="color: #990000">+</span>
+663:                    fd<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getFile</span></span><span style="color: #990000">(</span><span style="color: #990000">)</span><span style="color: #990000">)</span><span style="color: #990000">;</span>
+664:        <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">;</span>
+665:    <span style="color: #FF0000">}</span>
+666: <span style="color: #FF0000">}</span>
+667: 
+</tt>
+</pre>
